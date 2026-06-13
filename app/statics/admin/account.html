@@ -495,8 +495,8 @@
       max-width:220px;
       padding:6px 8px;
       border-radius:8px;
-      background:rgba(17,17,17,.94);
-      color:var(--on-accent);
+      background:var(--tooltip-bg);
+      color:var(--tooltip-fg);
       font-size:11px;
       line-height:1.35;
       white-space:normal;
@@ -504,6 +504,7 @@
       opacity:0;
       transform:translate3d(0,0,0);
       transition:opacity .08s ease;
+      box-shadow:0 4px 12px rgba(0,0,0,.18);
     }
     .admin-tooltip.show { opacity:1 }
     .row-nsfw-btn {
