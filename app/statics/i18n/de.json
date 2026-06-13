@@ -132,6 +132,7 @@
     "config": "Konfigurationsverwaltung",
     "cache": "Cache-Verwaltung",
     "languageLabel": "Sprache",
+    "themeToggle": "Dunkelmodus umschalten",
     "logout": "Abmelden",
     "versionDialogTitle": "Version",
     "versionCurrent": "Aktuell",

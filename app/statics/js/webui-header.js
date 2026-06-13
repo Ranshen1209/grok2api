@@ -221,4 +221,5 @@ window.renderWebuiHeader = async function renderWebuiHeader() {
   applyHeaderI18n();
   applyVersion();
   syncLanguageMenu?.();
+  window.Theme?.initToggle?.(mount.querySelector('#hd-theme-toggle'));
 };

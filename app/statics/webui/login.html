@@ -6,9 +6,19 @@
   <title data-i18n="login.webuiPageTitle">Grok2API - WebUI</title>
   <link rel="icon" href="/favicon.ico?v={{APP_VERSION}}">
   <link href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css" rel="stylesheet">
+  <script src="/static/js/theme.js?v={{APP_VERSION}}"></script>
   <link href="/static/css/app.css?v={{APP_VERSION}}" rel="stylesheet">
 </head>
 <body class="login-body">
+  <button type="button" class="btn login-theme-toggle" id="login-theme-toggle" aria-label="Toggle dark mode">
+    <svg class="theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+    <svg class="theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true" hidden>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
   <div class="login-bg"></div>
   <div class="login-shell">
     <div class="login-card">
@@ -50,6 +60,7 @@
         if (stored) webuiKey.clear();
         if (await verifyKey(VERIFY, '')) location.href='/webui/chat';
       } catch {}
+      window.Theme?.initToggle?.(document.getElementById('login-theme-toggle'));
       await renderSiteFooter?.();
     })();
   </script>

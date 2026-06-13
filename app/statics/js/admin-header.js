@@ -620,6 +620,7 @@ window.renderAdminHeader = async function renderAdminHeader() {
   applyHeaderI18n();
   applyVersion();
   syncLanguageMenu?.();
+  window.Theme?.initToggle?.(mount.querySelector('#hd-theme-toggle'));
 
   const versionModal = ensureVersionModal();
   versionModal.querySelector('#admin-version-modal-refresh')?.addEventListener('click', async () => {

@@ -132,6 +132,7 @@
     "config": "Gestion de la Configuration",
     "cache": "Gestion du Cache",
     "languageLabel": "Langue",
+    "themeToggle": "Basculer le mode sombre",
     "logout": "Se déconnecter",
     "versionDialogTitle": "Version",
     "versionCurrent": "Actuelle",

@@ -132,6 +132,7 @@
     "config": "構成管理",
     "cache": "キャッシュ管理",
     "languageLabel": "言語",
+    "themeToggle": "ダークモードを切り替え",
     "logout": "ログアウト",
     "versionDialogTitle": "バージョン",
     "versionCurrent": "現在",

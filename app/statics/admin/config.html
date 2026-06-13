@@ -6,9 +6,10 @@
   <title data-i18n="config.pageTitle">Grok2API - 配置管理</title>
   <link rel="icon" href="/favicon.ico?v={{APP_VERSION}}">
   <link href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css" rel="stylesheet">
+  <script src="/static/js/theme.js?v={{APP_VERSION}}"></script>
   <link href="/static/css/app.css?v={{APP_VERSION}}" rel="stylesheet">
   <style>
-    body { background: #FAF9F5 }
+    body { background: var(--surface-page) }
 
     /* Page header */
     .page-hd   { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px }
@@ -20,11 +21,11 @@
       height:32px; padding:0 14px; border-radius:999px;
       display:inline-flex; align-items:center; justify-content:center; gap:6px;
       font-size:13px; font-weight:600;
-      border:1px solid #e6e6e6; background:#fafafa; color:#444;
+      border:1px solid var(--border-light); background:var(--bg); color:var(--text-secondary);
     }
-    .page-action-btn:hover { background:#f3f3f3; border-color:#dcdcdc }
-    .page-action-btn-primary { background:#111; border-color:#111; color:#fff }
-    .page-action-btn-primary:hover { background:#222; border-color:#222 }
+    .page-action-btn:hover { background:var(--surface-hover); border-color:var(--border) }
+    .page-action-btn-primary { background:var(--accent-inverse); border-color:var(--accent-inverse); color:var(--on-accent) }
+    .page-action-btn-primary:hover { background:var(--text-body); border-color:var(--text-body) }
     .page-action-btn:disabled { opacity:.4; pointer-events:none }
 
     /* Section nav tabs */
@@ -42,15 +43,15 @@
       border-radius:999px;
       font-size:12px;
       font-weight:500;
-      color:#8f8f8f;
-      background:#f5f5f5;
+      color:var(--fg-muted);
+      background:var(--surface-warm);
       transition:color .15s, background .15s;
       cursor:pointer;
     }
-    .cfg-tab:hover { color:#555; background:#f1f1f1 }
+    .cfg-tab:hover { color:var(--text-body); background:var(--surface-hover) }
     .cfg-tab.active {
-      background:#111;
-      color:#fff;
+      background:var(--accent-inverse);
+      color:var(--on-accent);
       font-weight:600;
     }
     .cfg-tab .dot {
@@ -71,7 +72,7 @@
 
     /* Field rows */
     .cfg-group {
-      background:#fff;
+      background:var(--surface-stat);
       border:none;
       border-radius:12px;
       overflow:hidden;
@@ -80,11 +81,11 @@
     .cfg-group-title {
       font-size:11px;
       font-weight:700;
-      color:#8d8d8d;
+      color:var(--fg-muted);
       text-transform:uppercase;
       letter-spacing:.08em;
       padding:12px 16px 6px;
-      background:#fff;
+      background:var(--surface-stat);
       border-bottom:none;
     }
     .cfg-row {
@@ -93,13 +94,13 @@
       gap:18px;
       align-items:center;
       padding:11px 16px;
-      border-bottom:1px solid #f5f5f5;
+      border-bottom:1px solid var(--border);
       transition:background .15s;
     }
     .cfg-row:last-child { border-bottom:none }
-    .cfg-row:hover { background:#fcfcfc }
-    .cfg-row.modified { background:#fffaf0 }
-    .cfg-row.modified:hover { background:#fff6e7 }
+    .cfg-row:hover { background:var(--surface-hover) }
+    .cfg-row.modified { background:var(--surface-modified) }
+    .cfg-row.modified:hover { background:var(--surface-modified-hover) }
     .cfg-label-col { min-width:0; display:grid; gap:3px; align-content:start }
     .cfg-label {
       display:inline-flex;
@@ -107,10 +108,10 @@
       gap:6px;
       font-size:12px;
       font-weight:600;
-      color:#222;
+      color:var(--text-body);
       line-height:1.35;
     }
-    .cfg-desc  { max-width:520px; font-size:11px; color:#9a9a9a; line-height:1.45 }
+    .cfg-desc  { max-width:520px; font-size:11px; color:var(--fg-muted); line-height:1.45 }
     .cfg-help {
       position:relative;
       width:16px;
@@ -120,9 +121,9 @@
       justify-content:center;
       padding:0;
       border-radius:50%;
-      border:1px solid #e6e6e6;
-      background:#fafafa;
-      color:#8d8d8d;
+      border:1px solid var(--border-light);
+      background:var(--bg);
+      color:var(--fg-muted);
       font-size:11px;
       line-height:1;
       font-weight:700;
@@ -131,9 +132,9 @@
     }
     .cfg-help:hover,
     .cfg-help:focus-visible {
-      color:#222;
-      border-color:#d6d6d6;
-      background:#fff;
+      color:var(--text-body);
+      border-color:var(--border);
+      background:var(--surface-stat);
       outline:none;
     }
     .cfg-help-tip {
@@ -142,8 +143,8 @@
       max-width:min(320px, calc(100vw - 24px));
       padding:9px 10px;
       border-radius:8px;
-      background:#171717;
-      color:#fff;
+      background:var(--tooltip-bg);
+      color:var(--tooltip-fg);
       font-size:12px;
       font-weight:500;
       line-height:1.5;
@@ -167,7 +168,7 @@
       left:var(--arrow-left, 50%);
       width:8px;
       height:8px;
-      background:#171717;
+      background:var(--tooltip-bg);
       transform:translateX(-50%) rotate(45deg);
     }
     .cfg-help-tip[data-placement="top"]::before { bottom:-4px }
@@ -181,14 +182,14 @@
       align-items:center;
       justify-content:center;
       padding:0;
-      color:#9a9a9a;
+      color:var(--fg-muted);
       border:0;
       background:transparent;
       cursor:pointer;
       flex-shrink:0;
       transition:color .15s, opacity .15s, transform .15s;
     }
-    .cfg-inline-action:hover { color:#222; transform:translateY(-.5px) }
+    .cfg-inline-action:hover { color:var(--text-body); transform:translateY(-.5px) }
     .cfg-inline-action:disabled {
       opacity:.32;
       cursor:not-allowed;
@@ -204,12 +205,13 @@
       padding:0 10px;
       font-size:13px;
       border-radius:8px;
-      border:1px solid #ececec;
-      background:#fbfbfb;
+      border:1px solid var(--border);
+      background:var(--surface-input);
+      color:var(--fg);
       transition:border-color .15s, background .15s;
       font-family: inherit; text-align:right;
     }
-    .cfg-text:focus { border-color:#d7d7d7; background:#fff; outline:none; box-shadow:none }
+    .cfg-text:focus { border-color:var(--input-focus-border); background:var(--bg-card); outline:none; box-shadow:none }
     .cfg-text.wide  { max-width:none }
     .cfg-textarea {
       width:100%;
@@ -218,13 +220,14 @@
       padding:8px 10px;
       font-size:12px;
       border-radius:10px;
-      border:1px solid #ececec;
-      background:#fbfbfb;
+      border:1px solid var(--border);
+      background:var(--surface-input);
+      color:var(--fg);
       resize:vertical;
       transition:border-color .15s, background .15s;
       font-family: 'Geist Mono', 'Courier New', monospace; line-height:1.5; text-align:right;
     }
-    .cfg-textarea:focus { border-color:#d7d7d7; background:#fff; outline:none }
+    .cfg-textarea:focus { border-color:var(--input-focus-border); background:var(--bg-card); outline:none }
     .cfg-number {
       width:100%;
       max-width:none;
@@ -232,24 +235,26 @@
       padding:0 10px;
       font-size:13px;
       border-radius:8px;
-      border:1px solid #ececec;
-      background:#fbfbfb;
+      border:1px solid var(--border);
+      background:var(--surface-input);
+      color:var(--fg);
       text-align:right;
     }
-    .cfg-number:focus { border-color:#d7d7d7; background:#fff; outline:none }
+    .cfg-number:focus { border-color:var(--input-focus-border); background:var(--bg-card); outline:none }
     .cfg-select {
       width:100%;
       height:32px;
       padding:0 28px 0 10px;
       font-size:13px;
       border-radius:8px;
-      border:1px solid #ececec;
-      background:#fbfbfb;
+      border:1px solid var(--border);
+      background:var(--surface-input);
+      color:var(--fg);
       appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23666' stroke-width='2' fill='none'/%3E%3C/svg%3E");
       background-repeat:no-repeat; background-position:right 8px center;
       cursor:pointer; text-align:right;
     }
-    .cfg-select:focus { border-color:#d7d7d7; background:#fff; outline:none }
+    .cfg-select:focus { border-color:var(--input-focus-border); background:var(--bg-card); outline:none }
 
     /* Toggle switch */
     .toggle {
@@ -258,14 +263,14 @@
     .toggle input { opacity:0; width:0; height:0 }
     .toggle-track {
       position:absolute; cursor:pointer; inset:0;
-      background:#ddd; border-radius:20px; transition:background .2s;
+      background:var(--border); border-radius:20px; transition:background .2s;
     }
     .toggle-track::before {
       content:''; position:absolute; width:14px; height:14px;
-      left:3px; bottom:3px; background:#fff; border-radius:50%;
+      left:3px; bottom:3px; background:var(--toggle-knob); border-radius:50%;
       transition:transform .2s; box-shadow:0 1px 2px rgba(0,0,0,.15);
     }
-    .toggle input:checked + .toggle-track { background:#111 }
+    .toggle input:checked + .toggle-track { background:var(--accent-inverse) }
     .toggle input:checked + .toggle-track::before { transform:translateX(16px) }
 
     /* Modified badge */
@@ -280,10 +285,10 @@
     .cfg-rand-btn {
       width:30px; height:30px; border-radius:999px;
       display:inline-flex; align-items:center; justify-content:center;
-      color:#6a6a6a; border:1px solid #ececec; background:#fafafa;
+      color:var(--fg-muted); border:1px solid var(--border); background:var(--bg);
       cursor:pointer; flex-shrink:0; transition:background .15s, border-color .15s;
     }
-    .cfg-rand-btn:hover { background:#f3f3f3; border-color:#dddddd; color:#222 }
+    .cfg-rand-btn:hover { background:var(--surface-hover); border-color:var(--border); color:var(--text-body) }
 
     /* Save bar */
     .save-bar {
@@ -293,8 +298,8 @@
       z-index:50;
       width:min(calc(100% - 56px), 1280px);
       transform:translate(-50%, calc(100% + 20px));
-      background:rgba(255,255,255,.96);
-      border:1px solid #efefef;
+      background:var(--save-bar-bg);
+      border:1px solid var(--border);
       border-radius:16px;
       padding:12px 16px;
       display:flex;
@@ -315,10 +320,10 @@
       border:1px solid transparent;
       cursor:pointer;
     }
-    .save-bar-btn-cancel { border-color:#e6e6e6; background:#fafafa; color:#444 }
-    .save-bar-btn-cancel:hover { background:#f3f3f3; border-color:#dcdcdc }
-    .save-bar-btn-save { background:#111; color:#fff }
-    .save-bar-btn-save:hover { background:#222 }
+    .save-bar-btn-cancel { border-color:var(--border-light); background:var(--bg); color:var(--text-secondary) }
+    .save-bar-btn-cancel:hover { background:var(--surface-hover); border-color:var(--border) }
+    .save-bar-btn-save { background:var(--accent-inverse); color:var(--on-accent) }
+    .save-bar-btn-save:hover { background:var(--text-body) }
 
     @media (max-width:640px) {
       .cfg-row { grid-template-columns:1fr; gap:8px; align-items:flex-start }

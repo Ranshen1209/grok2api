@@ -21,6 +21,7 @@
     "config": "Configuration Management",
     "cache": "Cache Management",
     "languageLabel": "Language",
+    "themeToggle": "Toggle dark mode",
     "logout": "Sign Out",
     "versionDialogTitle": "Version",
     "versionCurrent": "Current",

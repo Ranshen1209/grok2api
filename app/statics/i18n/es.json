@@ -132,6 +132,7 @@
     "config": "Gestión de Configuración",
     "cache": "Gestión de Caché",
     "languageLabel": "Idioma",
+    "themeToggle": "Alternar modo oscuro",
     "logout": "Cerrar sesión",
     "versionDialogTitle": "Versión",
     "versionCurrent": "Actual",

@@ -21,6 +21,7 @@
     "config": "配置管理",
     "cache": "缓存管理",
     "languageLabel": "语言",
+    "themeToggle": "切换深色模式",
     "logout": "退出登录",
     "versionDialogTitle": "版本信息",
     "versionCurrent": "当前版本",
