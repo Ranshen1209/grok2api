@@ -10,8 +10,14 @@ import orjson
 
 from app.platform.logging.logger import logger
 from app.platform.config.snapshot import get_config
-from app.platform.errors import RateLimitError, UpstreamError, ValidationError
+from app.platform.errors import (
+    RateLimitError,
+    UpstreamError,
+    UpstreamTimeoutError,
+    ValidationError,
+)
 from app.platform.runtime.clock import now_s
+from app.platform.runtime.stream_timeout import aiter_with_timeout
 from app.platform.storage import save_local_image
 from app.platform.tokens import (
     estimate_prompt_tokens,
@@ -184,6 +190,8 @@ def _configured_retry_codes(cfg) -> frozenset[int]:
 
 def _should_retry_upstream(exc: UpstreamError, retry_codes: frozenset[int]) -> bool:
     """Return whether this upstream error should switch to another token."""
+    if isinstance(exc, UpstreamTimeoutError):
+        return True  # a wedged/slow upstream is always worth another account
     return exc.status in retry_codes or is_invalid_credentials_error(exc)
 
 
@@ -504,6 +512,10 @@ async def completions(
     retry_codes = _configured_retry_codes(cfg)
     response_id = make_response_id()
     timeout_s = cfg.get_float("chat.timeout", 120.0)
+    # Non-stream aggregation guard: idle = max seconds with zero upstream
+    # bytes; total = absolute backstop curl lacks in stream mode (0 disables).
+    idle_timeout_s = cfg.get_float("chat.idle_timeout", 45.0)
+    total_timeout_s = cfg.get_float("chat.total_timeout", 300.0)
 
     # ── Tool call setup ───────────────────────────────────────────────────────
     tool_names: list[str] = []
@@ -757,14 +769,18 @@ async def completions(
 
         try:
             try:
-                async for line in _stream_chat(
-                    token=token,
-                    mode_id=ModeId(selected_mode_id),
-                    message=message,
-                    files=files,
-                    tool_overrides=tool_overrides,
-                    request_overrides=request_overrides,
-                    timeout_s=timeout_s,
+                async for line in aiter_with_timeout(
+                    _stream_chat(
+                        token=token,
+                        mode_id=ModeId(selected_mode_id),
+                        message=message,
+                        files=files,
+                        tool_overrides=tool_overrides,
+                        request_overrides=request_overrides,
+                        timeout_s=timeout_s,
+                    ),
+                    idle_s=idle_timeout_s,
+                    total_s=total_timeout_s,
                 ):
                     event_type, data = classify_line(line)
                     if event_type == "done":

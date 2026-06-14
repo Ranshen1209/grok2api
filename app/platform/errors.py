@@ -78,16 +78,37 @@ class UpstreamError(AppError):
         )
 
 
-class StreamIdleTimeout(AppError):
-    def __init__(self, timeout_s: float) -> None:
-        super().__init__(
-            f"Stream idle timeout after {timeout_s}s",
-            kind=ErrorKind.UPSTREAM, code="stream_idle_timeout", status=504,
-        )
+class UpstreamTimeoutError(UpstreamError):
+    """Upstream produced no terminal response within the timeout budget.
+
+    Subclasses :class:`UpstreamError` so it flows through the same
+    ``except UpstreamError`` retry/feedback machinery as other transient
+    upstream failures, and is treated as always-retryable regardless of the
+    configured ``retry.on_codes`` (see ``_should_retry_upstream``).
+
+    ``timeout_kind`` distinguishes an *idle* stall (no bytes for N seconds)
+    from a *total* cap breach (slow trickle that never terminates).
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        kind: str = "idle",
+        timeout_s: float = 0.0,
+    ) -> None:
+        super().__init__(message, status=504)
+        self.code = "stream_timeout"
+        self.timeout_kind = kind
+        self.timeout_s = timeout_s
+
+
+# Backwards-compatible alias (previously an unused AppError variant).
+StreamIdleTimeout = UpstreamTimeoutError
 
 
 __all__ = [
     "ErrorKind", "AppError",
     "ValidationError", "AuthError", "RateLimitError",
-    "UpstreamError", "StreamIdleTimeout",
+    "UpstreamError", "UpstreamTimeoutError", "StreamIdleTimeout",
 ]

@@ -19,6 +19,7 @@ from app.platform.logging.logger import logger
 from app.platform.config.snapshot import get_config
 from app.platform.errors import RateLimitError, UpstreamError
 from app.platform.runtime.clock import now_s
+from app.platform.runtime.stream_timeout import aiter_with_timeout
 from app.platform.tokens import estimate_prompt_tokens, estimate_tokens
 from app.control.account.enums import FeedbackKind
 from app.control.account.invalid_credentials import feedback_kind_for_error
@@ -107,6 +108,9 @@ async def completions(
     spec = resolve_model(model)
     effort = _reasoning_effort_from_emit_think(emit_think)
     timeout_s = cfg.get_float("chat.timeout", 120.0)
+    # Non-stream aggregation guard (shared keys with grok.com chat path).
+    idle_timeout_s = cfg.get_float("chat.idle_timeout", 45.0)
+    total_timeout_s = cfg.get_float("chat.total_timeout", 300.0)
     max_retries = selection_max_retries()
     retry_codes = _configured_retry_codes(cfg)
     response_id = make_response_id()
@@ -251,8 +255,10 @@ async def completions(
             )
 
             try:
-                async for event_type, data in stream_console_chat(
-                    token, payload, timeout_s=timeout_s
+                async for event_type, data in aiter_with_timeout(
+                    stream_console_chat(token, payload, timeout_s=timeout_s),
+                    idle_s=idle_timeout_s,
+                    total_s=total_timeout_s,
                 ):
                     adapter.feed(event_type, data)
 
