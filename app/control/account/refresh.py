@@ -9,6 +9,7 @@ from app.platform.config.snapshot import get_config
 from app.platform.logging.logger import logger
 from app.platform.runtime.clock import now_ms
 from app.platform.runtime.batch import run_batch
+from app.platform.runtime.concurrency import effective_concurrency
 from app.control.model.enums import ALL_MODES_FULL
 from .enums import AccountStatus, QuotaSource
 from .models import AccountRecord, QuotaWindow
@@ -164,11 +165,14 @@ class AccountRefreshService:
         if not active:
             return RefreshResult(checked=len(records))
 
-        concurrency = get_config("account.refresh.usage_concurrency", 50)
+        conc = effective_concurrency(get_config("account.refresh.usage_concurrency", 8))
+        pause = float(get_config("account.refresh.refresh_pause_sec", 0.5))
         results = await run_batch(
             active,
             lambda r: self._refresh_one(r, apply_fallback=True, bootstrap=True),
-            concurrency=concurrency,
+            concurrency=conc,
+            batch_size=conc,
+            pause_sec=pause,
         )
         agg = RefreshResult(checked=len(records))
         for r in results:
@@ -211,11 +215,14 @@ class AccountRefreshService:
         if pool is not None:
             records = [r for r in records if r.pool == pool]
 
-        concurrency = get_config("account.refresh.usage_concurrency", 50)
+        conc = effective_concurrency(get_config("account.refresh.usage_concurrency", 8))
+        pause = float(get_config("account.refresh.refresh_pause_sec", 0.5))
         results = await run_batch(
             records,
             lambda r: self._refresh_one(r, apply_fallback=True),
-            concurrency=concurrency,
+            concurrency=conc,
+            batch_size=conc,
+            pause_sec=pause,
         )
         agg = RefreshResult()
         for r in results:
@@ -245,11 +252,14 @@ class AccountRefreshService:
     async def refresh_tokens(self, tokens: list[str]) -> RefreshResult:
         """Explicit refresh for a list of tokens (admin / manual trigger)."""
         records = [r for r in await self._repo.get_accounts(tokens) if is_manageable(r)]
-        concurrency = get_config("account.refresh.usage_concurrency", 50)
+        conc = effective_concurrency(get_config("account.refresh.usage_concurrency", 8))
+        pause = float(get_config("account.refresh.refresh_pause_sec", 0.5))
         results = await run_batch(
             records,
             lambda r: self._refresh_one(r, bootstrap=True),
-            concurrency=concurrency,
+            concurrency=conc,
+            batch_size=conc,
+            pause_sec=pause,
         )
         agg = RefreshResult()
         for r in results:
