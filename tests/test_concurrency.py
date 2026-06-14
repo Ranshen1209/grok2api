@@ -7,6 +7,7 @@ from app.platform.runtime import concurrency
 from app.control.account import refresh as refresh_mod
 from app.control.account.enums import AccountStatus
 from app.control.account.models import AccountRecord
+from app.products.web.admin import batch as admin_batch
 
 
 class EffectiveConcurrencyTest(unittest.TestCase):
@@ -94,6 +95,19 @@ class RefreshWiringTest(unittest.TestCase):
         self.assertEqual(self.captured.get("concurrency"), 3)
         self.assertEqual(self.captured.get("batch_size"), 3)
         self.assertIsInstance(self.captured.get("pause_sec"), float)
+
+
+class AdminConcurrencyTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self._orig = admin_batch.effective_concurrency
+        admin_batch.effective_concurrency = lambda c: min(c, 2)
+
+    def tearDown(self) -> None:
+        admin_batch.effective_concurrency = self._orig
+
+    def test_concurrency_passes_through_adaptive(self):
+        # override=10 → clamp to <=80 → adaptive caps to 2
+        self.assertEqual(admin_batch._concurrency(10, "batch.nsfw_concurrency"), 2)
 
 
 if __name__ == "__main__":
