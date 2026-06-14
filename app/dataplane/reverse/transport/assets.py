@@ -22,6 +22,7 @@ from app.dataplane.reverse.transport.http import (
     get_json,
 )
 from app.platform.config.snapshot import get_config
+from app.platform.runtime.concurrency import effective_concurrency
 from app.platform.errors import UpstreamError
 from app.platform.logging.logger import logger
 
@@ -33,14 +34,14 @@ _delete_sem: asyncio.Semaphore | None = None
 def _get_list_sem() -> asyncio.Semaphore:
     global _list_sem
     if _list_sem is None:
-        n = max(1, int(get_config("batch.asset_list_concurrency", 50)))
+        n = effective_concurrency(int(get_config("batch.asset_list_concurrency", 8)))
         _list_sem = asyncio.Semaphore(n)
     return _list_sem
 
 def _get_delete_sem() -> asyncio.Semaphore:
     global _delete_sem
     if _delete_sem is None:
-        n = max(1, int(get_config("batch.asset_delete_concurrency", 50)))
+        n = effective_concurrency(int(get_config("batch.asset_delete_concurrency", 8)))
         _delete_sem = asyncio.Semaphore(n)
     return _delete_sem
 

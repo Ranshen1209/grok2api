@@ -16,6 +16,7 @@ from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
 from app.platform.config.snapshot import get_config
+from app.platform.runtime.concurrency import effective_concurrency
 from app.platform.errors import AppError, ErrorKind, UpstreamError, ValidationError
 from app.platform.logging.logger import logger
 from app.platform.runtime.batch import run_batch
@@ -36,16 +37,18 @@ _MAX_BATCH_CONCURRENCY = 80
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _concurrency(override: int | None, config_key: str, fallback: int = 50) -> int:
-    """Resolve effective concurrency: query-param → config → fallback."""
+def _concurrency(override: int | None, config_key: str, fallback: int = 8) -> int:
+    """Resolve effective concurrency: query-param → config → fallback，再按内存自适应收紧。"""
     if override is not None:
-        return min(max(1, override), _MAX_BATCH_CONCURRENCY)
+        resolved = min(max(1, override), _MAX_BATCH_CONCURRENCY)
+        return effective_concurrency(resolved)
     v = get_config(config_key, fallback)
     try:
         resolved = int(v)
     except (TypeError, ValueError):
         resolved = fallback
-    return min(max(1, resolved), _MAX_BATCH_CONCURRENCY)
+    resolved = min(max(1, resolved), _MAX_BATCH_CONCURRENCY)
+    return effective_concurrency(resolved)
 
 
 def _mask(token: str) -> str:

@@ -14,6 +14,7 @@ import orjson
 
 from app.platform.logging.logger import logger
 from app.platform.config.snapshot import get_config
+from app.platform.runtime.concurrency import effective_concurrency
 from app.platform.errors import UpstreamError, ValidationError
 from app.dataplane.proxy import get_proxy_runtime
 from app.dataplane.proxy.adapters.headers import build_sso_cookie
@@ -33,7 +34,7 @@ _upload_sem: asyncio.Semaphore | None = None
 def _get_upload_sem() -> asyncio.Semaphore:
     global _upload_sem
     if _upload_sem is None:
-        n = max(1, int(get_config("batch.asset_upload_concurrency", 10)))
+        n = effective_concurrency(int(get_config("batch.asset_upload_concurrency", 4)))
         _upload_sem = asyncio.Semaphore(n)
     return _upload_sem
 

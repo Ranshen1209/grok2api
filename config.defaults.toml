@@ -118,7 +118,9 @@ enabled = true
 basic_interval_sec = 86400   # basic 号池周期（秒）：quota 模式用于后台刷新，random 模式用于 429 冷却；默认 86400s
 super_interval_sec = 7200    # super 号池周期（秒）：quota 模式用于后台刷新，random 模式用于 429 冷却；默认 7200s
 heavy_interval_sec = 7200    # heavy 号池周期（秒）：quota 模式用于后台刷新，random 模式用于 429 冷却；默认 7200s
-usage_concurrency = 50
+usage_concurrency = 8
+# 全量刷新每批之间的停顿秒数，让连接/缓冲释放（0 = 不停顿）
+refresh_pause_sec = 0.5
 on_demand_min_interval_sec = 300
 
 
@@ -164,12 +166,12 @@ timeout = 60
 # ==================== 批量操作 ====================
 [batch]
 # 开启 NSFW 并发数（token 级，每个 token 需三步网络请求）
-nsfw_concurrency         = 50
+nsfw_concurrency         = 8
 # 刷新 Usage 并发数（token 级）
-refresh_concurrency      = 50
+refresh_concurrency      = 8
 # 上传 Asset 并发数（全局，API 收到附件时触发，跨所有并发请求共享）
-asset_upload_concurrency = 10
+asset_upload_concurrency = 4
 # 查询 Asset 并发数（全局，跨所有并发请求共享）
-asset_list_concurrency   = 50
+asset_list_concurrency   = 8
 # 删除 Asset 并发数（全局，跨所有并发请求共享；也作为管理后台批量清理的 token 级默认值）
-asset_delete_concurrency = 50
+asset_delete_concurrency = 8
