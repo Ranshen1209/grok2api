@@ -1,4 +1,6 @@
 import unittest
+import tomllib
+from pathlib import Path
 
 from app.platform.runtime import concurrency
 
@@ -36,6 +38,24 @@ class EffectiveConcurrencyTest(unittest.TestCase):
     def test_floor_one(self):
         self._set_mem(320)
         self.assertEqual(concurrency.effective_concurrency(0), 1)
+
+
+class DefaultsTest(unittest.TestCase):
+    def setUp(self) -> None:
+        root = Path(__file__).resolve().parent.parent
+        with open(root / "config.defaults.toml", "rb") as f:
+            self.cfg = tomllib.load(f)
+
+    def test_refresh_defaults_lowered(self):
+        self.assertLessEqual(self.cfg["account"]["refresh"]["usage_concurrency"], 8)
+        self.assertIn("refresh_pause_sec", self.cfg["account"]["refresh"])
+
+    def test_batch_defaults_lowered(self):
+        b = self.cfg["batch"]
+        for k in ("nsfw_concurrency", "refresh_concurrency",
+                  "asset_list_concurrency", "asset_delete_concurrency"):
+            self.assertLessEqual(b[k], 8, k)
+        self.assertLessEqual(b["asset_upload_concurrency"], 4)
 
 
 if __name__ == "__main__":
